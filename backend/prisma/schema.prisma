@@ -1,0 +1,151 @@
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id              Int           @id @default(autoincrement())
+  name            String        @db.VarChar(255)
+  email           String        @unique @db.VarChar(255)
+  password        String        @db.VarChar(255)
+  role            Role
+  customRole      String?       @db.VarChar(100) // For Sub Users custom role text (e.g., "Developer", "Tester")
+  companyName     String?       @db.VarChar(255) // Company name for Super Admin and Project Admin
+  companyAddress  String?       @db.Text         // Company address for Project Admin
+  companyPhone    String?       @db.VarChar(20)  // Company phone for Project Admin
+  isActive        Boolean       @default(true)
+  isSuspended     Boolean       @default(false)
+  suspendedAt     DateTime?
+  suspensionReason String?      @db.VarChar(500)
+  suspendedBy     Int?          // ID of the user who suspended this user
+  unsuspendedAt   DateTime?
+  unsuspendedBy   Int?          // ID of the user who unsuspended this user
+  subUserLimit    Int           @default(5)      // Maximum number of sub-users this user can create
+  projects        UserProject[]
+  refreshTokens   RefreshToken[]
+  auditLogs       AuditLog[]
+  createdBy       User?         @relation("UserCreatedBy", fields: [createdById], references: [id])
+  createdById     Int?
+  createdUsers    User[]        @relation("UserCreatedBy")
+  lastLoginAt     DateTime?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  @@index([email])
+  @@index([role])
+  @@index([isActive])
+  @@index([isSuspended])
+  @@index([createdById])
+  @@index([suspendedBy])
+  @@index([companyName])
+  @@map("users")
+}
+
+model Project {
+  id               Int           @id @default(autoincrement())
+  customProjectId  String        @unique @db.VarChar(50) // Custom Project ID provided by Super Admin
+  name             String        @db.VarChar(255)
+  icon             String?       @db.VarChar(100) // Icon name or URL
+  description      String?       @db.Text
+  projectUrl       String        @db.VarChar(500) // URL to redirect to
+  isActive         Boolean       @default(true)
+  createdBy        Int           // Reference to the creator (typically Super Admin)
+  users            UserProject[]
+  auditLogs        AuditLog[]
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+
+  @@index([customProjectId])
+  @@index([name])
+  @@index([isActive])
+  @@index([createdBy])
+  @@map("projects")
+}
+
+// Join table for many-to-many relationship between User and Project
+model UserProject {
+  userId      Int
+  projectId   Int
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  project     Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  assignedAt  DateTime @default(now())
+  isActive    Boolean  @default(true)
+  lastAccessed DateTime? // Track when user last accessed this project
+
+  @@id([userId, projectId])
+  @@index([userId])
+  @@index([projectId])
+  @@index([isActive])
+  @@map("user_projects")
+}
+
+model OtpRequest {
+  id        Int        @id @default(autoincrement())
+  email     String     @db.VarChar(255)
+  otp       String     @db.VarChar(10)
+  purpose   OtpPurpose
+  expiresAt DateTime
+  isUsed    Boolean    @default(false)
+  createdAt DateTime   @default(now())
+
+  @@index([email])
+  @@index([expiresAt])
+  @@index([purpose])
+  @@index([isUsed])
+  @@map("otp_requests")
+}
+
+model RefreshToken {
+  id        String   @id @default(uuid())
+  token     String   @unique @db.VarChar(500)
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  isRevoked Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([token])
+  @@index([expiresAt])
+  @@index([isRevoked])
+  @@map("refresh_tokens")
+}
+
+model AuditLog {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  action    String   @db.VarChar(100)
+  resource  String?  @db.VarChar(50)
+  projectId Int?
+  details   Json?
+  ipAddress String?  @db.VarChar(45)
+  userAgent String?  @db.Text
+  success   Boolean  @default(true)
+  createdAt DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  project   Project? @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([action])
+  @@index([projectId])
+  @@index([success])
+  @@index([createdAt])
+  @@map("audit_logs")
+}
+
+enum Role {
+  SUPER_ADMIN
+  ADMIN      // Project Admin
+  SUB_USER
+}
+
+enum OtpPurpose {
+  REGISTRATION
+  FORGOT_PASSWORD
+  ACCOUNT_ACTIVATION
+}

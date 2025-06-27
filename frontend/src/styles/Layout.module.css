@@ -1,0 +1,138 @@
+.layout {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  background-color: var(--bg-primary);
+  transition: background-color 0.3s ease;
+}
+
+.sidebar {
+  background-color: var(--light-bg);
+  border-right: 1px solid var(--light-border);
+  padding: var(--spacing-lg);
+  overflow-y: auto;
+  transition: all var(--transition-normal);
+}
+
+.dark-theme .sidebar {
+  background-color: var(--dark-bg);
+  border-color: var(--dark-border);
+}
+
+.main-content {
+  padding: 1rem;
+  overflow-x: hidden;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-md) var(--spacing-lg);
+  background-color: var(--light-bg);
+  border-bottom: 1px solid var(--light-border);
+}
+
+.dark-theme .header {
+  background-color: var(--dark-bg);
+  border-color: var(--dark-border);
+}
+
+/* Navigation */
+.nav {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.navItem {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--radius-md);
+  color: var(--light-text-secondary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.navItem:hover {
+  background-color: var(--light-hover);
+  color: var(--primary);
+}
+
+.navItem.active {
+  background-color: var(--primary);
+  color: white;
+}
+
+.dark-theme .navItem {
+  color: var(--dark-text-secondary);
+}
+
+.dark-theme .navItem:hover {
+  background-color: var(--dark-hover);
+}
+
+/* Collapsible Sections */
+.collapsible {
+  border: 1px solid var(--light-border);
+  border-radius: var(--radius-md);
+  margin-bottom: var(--spacing-md);
+}
+
+.dark-theme .collapsible {
+  border-color: var(--dark-border);
+}
+
+.collapsibleHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-md);
+  cursor: pointer;
+  background-color: var(--light-hover);
+}
+
+.dark-theme .collapsibleHeader {
+  background-color: var(--dark-hover);
+}
+
+.collapsibleContent {
+  padding: var(--spacing-md);
+  border-top: 1px solid var(--light-border);
+}
+
+.dark-theme .collapsibleContent {
+  border-color: var(--dark-border);
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .layout {
+    grid-template-columns: 240px 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .layout {
+    grid-template-columns: 1fr;
+  }
+  
+  .sidebar {
+    position: fixed;
+    left: -280px;
+    top: 0;
+    bottom: 0;
+    z-index: 1000;
+    width: 280px;
+  }
+  
+  .sidebar.open {
+    left: 0;
+  }
+  
+  .main-content {
+    padding: 0.75rem;
+  }
+} 

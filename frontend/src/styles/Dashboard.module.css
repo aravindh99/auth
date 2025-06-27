@@ -1,0 +1,273 @@
+/* Dashboard Overview */
+.overview {
+  display: grid;
+  gap: var(--spacing-lg);
+  margin-bottom: var(--spacing-xl);
+}
+
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: var(--spacing-md);
+}
+
+.statCard {
+  background-color: var(--light-bg);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-lg);
+  box-shadow: var(--shadow-md);
+  transition: transform var(--transition-normal);
+}
+
+.dark-theme .statCard {
+  background-color: var(--dark-bg);
+  border: 1px solid var(--dark-border);
+}
+
+.statCard:hover {
+  transform: translateY(-2px);
+}
+
+.statHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-md);
+}
+
+.statTitle {
+  font-size: 0.875rem;
+  color: var(--light-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.dark-theme .statTitle {
+  color: var(--dark-text-secondary);
+}
+
+.statValue {
+  font-size: 2rem;
+  font-weight: 600;
+  color: var(--primary);
+}
+
+.statChange {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  font-size: 0.875rem;
+}
+
+.statChange.positive {
+  color: var(--success);
+}
+
+.statChange.negative {
+  color: var(--error);
+}
+
+/* Company List */
+.companyList {
+  margin-top: var(--spacing-xl);
+}
+
+.companyCard {
+  background-color: var(--light-bg);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-lg);
+  margin-bottom: var(--spacing-md);
+  box-shadow: var(--shadow-md);
+}
+
+.dark-theme .companyCard {
+  background-color: var(--dark-bg);
+  border: 1px solid var(--dark-border);
+}
+
+.companyHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-md);
+}
+
+.companyName {
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.companyStats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: var(--spacing-md);
+  margin-top: var(--spacing-md);
+}
+
+/* Project List */
+.projectList {
+  margin-top: var(--spacing-md);
+}
+
+.projectCard {
+  background-color: var(--light-bg);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-md);
+  margin-bottom: var(--spacing-sm);
+  border: 1px solid var(--light-border);
+}
+
+.dark-theme .projectCard {
+  background-color: var(--dark-bg);
+  border-color: var(--dark-border);
+}
+
+.projectHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.projectName {
+  font-weight: 500;
+}
+
+.projectUrl {
+  font-size: 0.875rem;
+  color: var(--light-text-secondary);
+}
+
+.dark-theme .projectUrl {
+  color: var(--dark-text-secondary);
+}
+
+/* User List */
+.userList {
+  margin-top: var(--spacing-md);
+}
+
+.userCard {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  padding: var(--spacing-sm);
+  border-radius: var(--radius-md);
+  background-color: var(--light-hover);
+}
+
+.dark-theme .userCard {
+  background-color: var(--dark-hover);
+}
+
+.userAvatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: var(--primary);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 500;
+}
+
+.userInfo {
+  flex: 1;
+}
+
+.userName {
+  font-weight: 500;
+}
+
+.userRole {
+  font-size: 0.875rem;
+  color: var(--light-text-secondary);
+}
+
+.dark-theme .userRole {
+  color: var(--dark-text-secondary);
+}
+
+/* Diagram Toggle */
+.diagramToggle {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-lg);
+}
+
+.toggleSwitch {
+  position: relative;
+  display: inline-block;
+  width: 48px;
+  height: 24px;
+}
+
+.toggleSwitch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.toggleSlider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: var(--light-border);
+  transition: var(--transition-fast);
+  border-radius: 24px;
+}
+
+.toggleSlider:before {
+  position: absolute;
+  content: "";
+  height: 18px;
+  width: 18px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: var(--transition-fast);
+  border-radius: 50%;
+}
+
+input:checked + .toggleSlider {
+  background-color: var(--primary);
+}
+
+input:checked + .toggleSlider:before {
+  transform: translateX(24px);
+}
+
+/* Diagram View */
+.diagramView {
+  margin-top: var(--spacing-lg);
+  padding: var(--spacing-lg);
+  background-color: var(--light-bg);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+}
+
+.dark-theme .diagramView {
+  background-color: var(--dark-bg);
+  border: 1px solid var(--dark-border);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .statsGrid {
+    grid-template-columns: 1fr;
+  }
+  
+  .companyStats {
+    grid-template-columns: 1fr 1fr;
+  }
+  
+  .projectHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-sm);
+  }
+} 
