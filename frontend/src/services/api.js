@@ -127,7 +127,7 @@ export const usersAPI = {
 
 // Health check
 export const healthAPI = {
-  check: () => api.get('/health', { baseURL: 'http://localhost:5000' }),
+  check: () => api.get('/health', { baseURL: API_BASE_URL }),
 };
 
 // Helper functions

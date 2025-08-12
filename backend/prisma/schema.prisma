@@ -1,39 +1,39 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
 datasource db {
   provider = "mysql"
   url      = env("DATABASE_URL")
 }
 
-generator client {
-  provider = "prisma-client-js"
-}
-
 model User {
-  id              Int           @id @default(autoincrement())
-  name            String        @db.VarChar(255)
-  email           String        @unique @db.VarChar(255)
-  password        String        @db.VarChar(255)
-  role            Role
-  customRole      String?       @db.VarChar(100) // For Sub Users custom role text (e.g., "Developer", "Tester")
-  companyName     String?       @db.VarChar(255) // Company name for Super Admin and Project Admin
-  companyAddress  String?       @db.Text         // Company address for Project Admin
-  companyPhone    String?       @db.VarChar(20)  // Company phone for Project Admin
-  isActive        Boolean       @default(true)
-  isSuspended     Boolean       @default(false)
-  suspendedAt     DateTime?
-  suspensionReason String?      @db.VarChar(500)
-  suspendedBy     Int?          // ID of the user who suspended this user
-  unsuspendedAt   DateTime?
-  unsuspendedBy   Int?          // ID of the user who unsuspended this user
-  subUserLimit    Int           @default(5)      // Maximum number of sub-users this user can create
-  projects        UserProject[]
-  refreshTokens   RefreshToken[]
-  auditLogs       AuditLog[]
-  createdBy       User?         @relation("UserCreatedBy", fields: [createdById], references: [id])
-  createdById     Int?
-  createdUsers    User[]        @relation("UserCreatedBy")
-  lastLoginAt     DateTime?
-  createdAt       DateTime      @default(now())
-  updatedAt       DateTime      @updatedAt
+  id               Int            @id @default(autoincrement())
+  name             String         @db.VarChar(255)
+  email            String         @unique @db.VarChar(255)
+  password         String         @db.VarChar(255)
+  role             Role
+  companyName      String?        @db.VarChar(255)
+  isActive         Boolean        @default(true)
+  createdById      Int?
+  lastLoginAt      DateTime?
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+  customRole       String?        @db.VarChar(100)
+  companyAddress   String?        @db.Text
+  companyPhone     String?        @db.VarChar(20)
+  isSuspended      Boolean        @default(false)
+  suspendedAt      DateTime?
+  suspendedBy      Int?
+  suspensionReason String?        @db.VarChar(500)
+  unsuspendedAt    DateTime?
+  unsuspendedBy    Int?
+  subUserLimit     Int            @default(5)
+  auditLogs        AuditLog[]
+  refreshTokens    RefreshToken[]
+  projects         UserProject[]
+  createdBy        User?          @relation("UserCreatedBy", fields: [createdById], references: [id])
+  createdUsers     User[]         @relation("UserCreatedBy")
 
   @@index([email])
   @@index([role])
@@ -46,18 +46,18 @@ model User {
 }
 
 model Project {
-  id               Int           @id @default(autoincrement())
-  customProjectId  String        @unique @db.VarChar(50) // Custom Project ID provided by Super Admin
-  name             String        @db.VarChar(255)
-  icon             String?       @db.VarChar(100) // Icon name or URL
-  description      String?       @db.Text
-  projectUrl       String        @db.VarChar(500) // URL to redirect to
-  isActive         Boolean       @default(true)
-  createdBy        Int           // Reference to the creator (typically Super Admin)
-  users            UserProject[]
-  auditLogs        AuditLog[]
-  createdAt        DateTime      @default(now())
-  updatedAt        DateTime      @updatedAt
+  id              Int           @id @default(autoincrement())
+  customProjectId String        @unique @db.VarChar(50)
+  name            String        @db.VarChar(255)
+  icon            String?       @db.VarChar(100)
+  description     String?       @db.Text
+  projectUrl      String        @db.VarChar(500)
+  isActive        Boolean       @default(true)
+  createdBy       Int
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  auditLogs       AuditLog[]
+  users           UserProject[]
 
   @@index([customProjectId])
   @@index([name])
@@ -66,15 +66,14 @@ model Project {
   @@map("projects")
 }
 
-// Join table for many-to-many relationship between User and Project
 model UserProject {
-  userId      Int
-  projectId   Int
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  project     Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  assignedAt  DateTime @default(now())
-  isActive    Boolean  @default(true)
-  lastAccessed DateTime? // Track when user last accessed this project
+  userId       Int
+  projectId    Int
+  assignedAt   DateTime  @default(now())
+  isActive     Boolean   @default(true)
+  lastAccessed DateTime?
+  project      Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@id([userId, projectId])
   @@index([userId])
@@ -103,10 +102,10 @@ model RefreshToken {
   id        String   @id @default(uuid())
   token     String   @unique @db.VarChar(500)
   userId    Int
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   expiresAt DateTime
   isRevoked Boolean  @default(false)
   createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@index([token])
@@ -126,9 +125,8 @@ model AuditLog {
   userAgent String?  @db.Text
   success   Boolean  @default(true)
   createdAt DateTime @default(now())
-
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   project   Project? @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@index([action])
@@ -140,7 +138,7 @@ model AuditLog {
 
 enum Role {
   SUPER_ADMIN
-  ADMIN      // Project Admin
+  ADMIN
   SUB_USER
 }
 
