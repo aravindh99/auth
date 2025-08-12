@@ -1,6 +1,7 @@
 import axios from 'axios';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+const API_ROOT_URL = API_BASE_URL.replace(/\/api\/?$/, '');
 
 // Create axios instance
 const api = axios.create({
@@ -35,9 +36,9 @@ api.interceptors.response.use(
       originalRequest._retry = true;
 
       try {
-        const refreshToken = tokenHelper.getRefreshToken();
+        const refreshToken = tokenHelper.getTokens().refreshToken;
         if (!refreshToken) {
-          tokenHelper.clearAuth();
+          tokenHelper.removeTokens();
           window.location.href = '/login';
           return Promise.reject(error);
         }
@@ -53,7 +54,7 @@ api.interceptors.response.use(
         originalRequest.headers.Authorization = `Bearer ${accessToken}`;
         return api(originalRequest);
       } catch (error) {
-        tokenHelper.clearAuth();
+        tokenHelper.removeTokens();
         window.location.href = '/login';
         return Promise.reject(error);
       }
@@ -127,7 +128,7 @@ export const usersAPI = {
 
 // Health check
 export const healthAPI = {
-  check: () => api.get('/health', { baseURL: API_BASE_URL }),
+  check: () => api.get('/health', { baseURL: API_ROOT_URL }),
 };
 
 // Helper functions
